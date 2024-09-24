@@ -56,7 +56,7 @@ const AllBarang = () => {
 
   return (
     <Layout>
-      <section id="all-barang" className="p-3">
+      <section id="all-barang" className="p-1">
         <div className="flex justify-between mb-3">
           <h2 className="text-4xl font-bold">Semua Barang</h2>
           <div>
