@@ -10,25 +10,61 @@ const Sidebar = () => {
         onClick={() => setIsOpen(!isOpen)}
         className="block md:hidden p-4 text-white bg-blue-900"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="30"
-          height="30"
-          fill="white"
-          viewBox="0 0 24 24"
-        >
-          <path d="M4 6h16M4 12h16M4 18h16" stroke="white" strokeWidth="2" />
-        </svg>
+        {isOpen ? (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="30"
+            height="30"
+            fill="white"
+            viewBox="0 0 24 24"
+          >
+            <path
+              fill="white"
+              d="M6 18L18 6M6 6l12 12"
+              stroke="white"
+              strokeWidth="2"
+            />
+          </svg>
+        ) : (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="30"
+            height="30"
+            fill="white"
+            viewBox="0 0 24 24"
+          >
+            <path d="M4 6h16M4 12h16M4 18h16" stroke="white" strokeWidth="2" />
+          </svg>
+        )}
       </button>
       <aside
         className={`${
           isOpen ? "block" : "hidden"
         } md:block md:w-1/5 w-full bg-blue-900 text-white h-full md:h-screen fixed md:relative z-50`}
       >
-        <div className="h-20 shadow-lg flex justify-center items-center">
+        <div className="h-20 shadow-lg flex justify-between items-center px-4">
           <h2 className="flex items-center text-2xl font-bold gap-1">
             RB Market
           </h2>
+          {/* Close button (X) */}
+          <button
+            onClick={() => setIsOpen(false)}
+            className="md:hidden text-white"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="white"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M6 18L18 6M6 6l12 12"
+                stroke="white"
+                strokeWidth="2"
+              />
+            </svg>
+          </button>
         </div>
 
         <nav className="flex justify-center pt-10">
@@ -74,6 +110,8 @@ const LinkSidebar = ({ link, children }) => {
     </Link>
   );
 };
+
+// Icons (unchanged)
 const DashboardIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
