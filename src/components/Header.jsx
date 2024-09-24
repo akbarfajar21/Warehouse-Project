@@ -17,6 +17,8 @@ const Header = () => {
         return "Tambah Barang";
       case "/suppliers":
         return "Suppliers";
+      case "/add-supplier":
+        return "Tambah Supplier";
       default:
         if (location.pathname.startsWith("/change-item")) {
           return `Edit Item`;

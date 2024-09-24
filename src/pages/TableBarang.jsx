@@ -52,7 +52,7 @@ const TableBarang = () => {
 
   return (
     <Layout>
-      <section id="table-barang" className="p-8">
+      <section id="table-barang" className="p-4">
         <div className="flex flex-col md:flex-row md:justify-between mb-5">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 md:mb-0">
             Table Barang

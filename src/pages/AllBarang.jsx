@@ -56,8 +56,8 @@ const AllBarang = () => {
 
   return (
     <Layout>
-      <section id="all-barang" className="p-5">
-        <div className="flex justify-between mb-5">
+      <section id="all-barang" className="p-3">
+        <div className="flex justify-between mb-3">
           <h2 className="text-4xl font-bold">Semua Barang</h2>
           <div>
             <label htmlFor="filter" className="mr-2">
