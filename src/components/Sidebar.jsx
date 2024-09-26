@@ -40,7 +40,7 @@ const Sidebar = () => {
       <aside
         className={`${
           isOpen ? "block" : "hidden"
-        } md:block md:w-1/5 w-full bg-blue-900 text-white h-full md:h-screen fixed md:relative z-50`}
+        } md:block md:w-1/5 w-full bg-blue-900 text-white h-full md:h-auto fixed md:relative z-50`}
       >
         <div className="h-20 shadow-lg flex justify-between items-center px-4">
           <h2 className="flex items-center text-2xl font-bold gap-1">
@@ -58,11 +58,7 @@ const Sidebar = () => {
               fill="white"
               viewBox="0 0 24 24"
             >
-              <path
-                d="M6 18L18 6M6 6l12 12"
-                stroke="white"
-                strokeWidth="2"
-              />
+              <path d="M6 18L18 6M6 6l12 12" stroke="white" strokeWidth="2" />
             </svg>
           </button>
         </div>

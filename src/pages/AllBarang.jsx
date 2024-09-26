@@ -5,25 +5,45 @@ import { Spinner } from "@nextui-org/react";
 
 const ITEMS_PER_PAGE = 8; 
 
-const Modal = ({ isOpen, onClose, item }) => {
+const Modal = ({ isOpen, onClose, item, filter }) => {
   if (!isOpen || !item) return null; 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-6 rounded-md shadow-lg w-96">
-        <h3 className="text-xl font-semibold mb-4">{item.nama_barang || item.nama_supplier}</h3>
-        {item.foto_barang || item.logo_supplier ? (
-          <img
-            src={item.foto_barang || item.logo_supplier}
-            alt={item.nama_barang || item.nama_supplier}
-            className="w-full h-72 object-cover rounded-md mb-4"
-          />
+        {filter === "barang" ? (
+          <>
+            <h3 className="text-xl font-semibold mb-4">{item.nama_barang}</h3>
+            {item.foto_barang ? (
+              <img
+                src={item.foto_barang}
+                alt={item.nama_barang}
+                className="w-full h-72 object-cover rounded-md mb-4"
+              />
+            ) : (
+              <p>No image available</p>
+            )}
+            <p className="text-gray-600 mb-2">Harga: {item.harga || "-"}</p>
+            <p className="text-gray-600 mb-2">Stok: {item.stok || "-"}</p>
+            <p className="text-gray-600 mb-2">Deskripsi: {item.deskripsi || "-"}</p>
+          </>
         ) : (
-          <p>No image available</p>
+          <>
+            <h3 className="text-xl font-semibold mb-4">{item.nama_supplier}</h3>
+            {item.logo_supplier ? (
+              <img
+                src={item.logo_supplier}
+                alt={item.nama_supplier}
+                className="w-full h-72 object-cover rounded-md mb-4"
+              />
+            ) : (
+              <p>No image available</p>
+            )}
+            <p className="text-gray-600 mb-2">No HP: {item.no_hp || "-"}</p>
+            <p className="text-gray-600 mb-2">Alamat: {item.alamat || "-"}</p>
+            <p className="text-gray-600 mb-2">Email: {item.email || "-"}</p>
+          </>
         )}
-        <p className="text-gray-600 mb-2">Harga: {item.harga || "-"}</p>
-        <p className="text-gray-600 mb-2">Stok: {item.stok || "-"}</p>
-        <p className="text-gray-600 mb-2">Deskripsi: {item.deskripsi || item.alamat || "-"}</p>
         <button
           onClick={onClose}
           className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md"
@@ -34,7 +54,6 @@ const Modal = ({ isOpen, onClose, item }) => {
     </div>
   );
 };
-
 
 const AllBarang = () => {
   const [barang, setBarang] = useState([]);
@@ -161,14 +180,14 @@ const AllBarang = () => {
                     )}
                     <h3 className="text-xl font-semibold mb-2">{supplier.nama_supplier}</h3>
                     <p className="text-gray-600">Alamat: {supplier.alamat}</p>
-                    <p className="text-gray-600">Telepon: {supplier.telepon}</p>
+                    <p className="text-gray-600">Telepon: {supplier.no_hp}</p>
                   </div>
                 ))}
             </div>
 
             <div className="flex justify-center items-center mt-8 space-x-2">
               <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} 
                 disabled={currentPage === 1}
                 className="px-4 py-2 text-white rounded-md bg-blue-500"
               >
@@ -202,6 +221,7 @@ const AllBarang = () => {
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
           item={selectedItem}
+          filter={filter} 
         />
       </section>
     </Layout>

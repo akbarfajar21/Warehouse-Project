@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Layout from "../../components/Layout";
 import { supabase } from "../../utils/SupaClient";
 import { useParams, useNavigate } from "react-router-dom";
-import { ClipLoader } from "react-spinners"; // Import the spinner component
+import { ClipLoader } from "react-spinners"; 
 
 const SupplierDetail = () => {
   const [supplier, setSupplier] = useState(null);
