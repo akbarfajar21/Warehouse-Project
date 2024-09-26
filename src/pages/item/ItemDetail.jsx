@@ -34,7 +34,14 @@ const ItemDetail = () => {
   }, [id]);
 
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="flex items-center justify-center space-x-2">
+          <div className="w-8 h-8 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
+          <span className="text-blue-500 text-lg">Loading...</span>
+        </div>
+      </div>
+    );
   }
 
   if (!getBarangById) {

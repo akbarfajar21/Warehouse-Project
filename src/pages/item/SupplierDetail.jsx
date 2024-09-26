@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Layout from "../../components/Layout";
 import { supabase } from "../../utils/SupaClient";
 import { useParams, useNavigate } from "react-router-dom";
+import { ClipLoader } from "react-spinners"; // Import the spinner component
 
 const SupplierDetail = () => {
   const [supplier, setSupplier] = useState(null);
@@ -14,7 +15,7 @@ const SupplierDetail = () => {
       const { data, error } = await supabase
         .from("suppliers")
         .select("*")
-        .eq("id_supplier", id) 
+        .eq("id_supplier", id)
         .single();
 
       if (error) {
@@ -34,7 +35,11 @@ const SupplierDetail = () => {
   }, [id]);
 
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <ClipLoader size={50} color="#3498db" />
+      </div>
+    );
   }
 
   if (!supplier) {
@@ -70,7 +75,9 @@ const SupplierDetail = () => {
 
               <div className="mb-4">
                 <strong>Email: </strong>
-                <a href={`mailto:${email}`} className="text-blue-500">{email}</a>
+                <a href={`mailto:${email}`} className="text-blue-500">
+                  {email}
+                </a>
               </div>
 
               <button

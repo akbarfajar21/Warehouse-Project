@@ -4,9 +4,10 @@ import { Input, Button } from "@nextui-org/react";
 import { supabase } from "../../utils/SupaClient";
 import Swal from "sweetalert2";
 import Layout from "../../components/Layout";
+import { ClipLoader } from "react-spinners"; 
 
 export default function ChangeSupplier() {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const navigate = useNavigate();
   const [supplier, setSupplier] = useState(null);
   const [formData, setFormData] = useState({
@@ -57,7 +58,7 @@ export default function ChangeSupplier() {
     const { error } = await supabase
       .from("suppliers")
       .update(formData)
-      .eq("id_supplier", id); 
+      .eq("id_supplier", id);
 
     if (error) {
       Swal.fire({
@@ -81,7 +82,13 @@ export default function ChangeSupplier() {
     }
   };
 
-  if (!supplier) return <div>Loading...</div>;
+  if (!supplier) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <ClipLoader color="#4caf50" size={50} /> {/* Spinner */}
+      </div>
+    );
+  }
 
   return (
     <Layout>

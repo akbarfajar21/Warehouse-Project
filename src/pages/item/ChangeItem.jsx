@@ -9,6 +9,7 @@ export default function ChangeItem() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [item, setItem] = useState(null);
+  const [loading, setLoading] = useState(true); // Added loading state
   const [formData, setFormData] = useState({
     nama_barang: "",
     foto_barang: "",
@@ -20,6 +21,7 @@ export default function ChangeItem() {
 
   useEffect(() => {
     const fetchItem = async () => {
+      setLoading(true); // Start loading
       const { data, error } = await supabase
         .from("barang")
         .select("*")
@@ -28,6 +30,7 @@ export default function ChangeItem() {
 
       if (error) {
         console.error("Error fetching item:", error);
+        setLoading(false); // Stop loading on error
         return;
       }
 
@@ -40,6 +43,7 @@ export default function ChangeItem() {
         stok: data.stok,
         deskripsi: data.deskripsi,
       });
+      setLoading(false); // Stop loading on success
     };
 
     fetchItem();
@@ -83,7 +87,16 @@ export default function ChangeItem() {
     }
   };
 
-  if (!item) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent border-t-4 border-solid rounded-full animate-spin"></div>
+        <p className="ml-4 text-blue-500 text-lg font-semibold">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!item) return <div className="text-center mt-4">Item not found</div>;
 
   return (
     <Layout>

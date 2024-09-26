@@ -6,7 +6,7 @@ import { Spinner } from "@nextui-org/react";
 const ITEMS_PER_PAGE = 8; 
 
 const Modal = ({ isOpen, onClose, item }) => {
-  if (!isOpen || !item) return null; // Jangan tampilkan modal jika tidak terbuka atau item tidak ada
+  if (!isOpen || !item) return null; 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
@@ -123,8 +123,8 @@ const AllBarang = () => {
                   <div
                     key={item.id}
                     onClick={() => {
-                      setSelectedItem(item); // Set item yang diklik
-                      setIsOpen(true); // Buka modal
+                      setSelectedItem(item); 
+                      setIsOpen(true); 
                     }}
                     className="bg-white border border-gray-300 rounded-lg shadow-lg p-4 cursor-pointer"
                   >
@@ -198,7 +198,6 @@ const AllBarang = () => {
           </>
         )}
 
-        {/* Render Modal */}
         <Modal
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
