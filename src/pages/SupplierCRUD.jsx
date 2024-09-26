@@ -168,6 +168,12 @@ export default function SupplierCRUD() {
                       alt={item.nama_supplier}
                       className="h-16 w-16 object-cover rounded-lg"
                     />
+                  ) : columnKey === "alamat" ? (
+                    <Tooltip content={item[columnKey]}>
+                      <span>
+                        {item[columnKey].split(" ").slice(0, 5).join(" ")}...
+                      </span>
+                    </Tooltip>
                   ) : columnKey === "action" ? (
                     <div className="relative flex items-center gap-5 p-2">
                       <Link to={`/detail-supplier/${item.id_supplier}`}>

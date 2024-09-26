@@ -5,12 +5,45 @@ import { Spinner } from "@nextui-org/react";
 
 const ITEMS_PER_PAGE = 8; 
 
+const Modal = ({ isOpen, onClose, item }) => {
+  if (!isOpen || !item) return null; // Jangan tampilkan modal jika tidak terbuka atau item tidak ada
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+      <div className="bg-white p-6 rounded-md shadow-lg w-96">
+        <h3 className="text-xl font-semibold mb-4">{item.nama_barang || item.nama_supplier}</h3>
+        {item.foto_barang || item.logo_supplier ? (
+          <img
+            src={item.foto_barang || item.logo_supplier}
+            alt={item.nama_barang || item.nama_supplier}
+            className="w-full h-72 object-cover rounded-md mb-4"
+          />
+        ) : (
+          <p>No image available</p>
+        )}
+        <p className="text-gray-600 mb-2">Harga: {item.harga || "-"}</p>
+        <p className="text-gray-600 mb-2">Stok: {item.stok || "-"}</p>
+        <p className="text-gray-600 mb-2">Deskripsi: {item.deskripsi || item.alamat || "-"}</p>
+        <button
+          onClick={onClose}
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  );
+};
+
+
 const AllBarang = () => {
   const [barang, setBarang] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("barang");
   const [currentPage, setCurrentPage] = useState(1);
+  const [isOpen, setIsOpen] = useState(false); 
+  const [selectedItem, setSelectedItem] = useState(null);
 
   const fetchData = async () => {
     try {
@@ -43,6 +76,7 @@ const AllBarang = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
   const currentItems =
@@ -50,8 +84,7 @@ const AllBarang = () => {
       ? barang.slice(indexOfFirstItem, indexOfLastItem)
       : suppliers.slice(indexOfFirstItem, indexOfLastItem);
 
-  const totalItems =
-    filter === "barang" ? barang.length : suppliers.length;
+  const totalItems = filter === "barang" ? barang.length : suppliers.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
   return (
@@ -89,7 +122,11 @@ const AllBarang = () => {
                 currentItems.map((item) => (
                   <div
                     key={item.id}
-                    className="bg-white border border-gray-300 rounded-lg shadow-lg p-4"
+                    onClick={() => {
+                      setSelectedItem(item); // Set item yang diklik
+                      setIsOpen(true); // Buka modal
+                    }}
+                    className="bg-white border border-gray-300 rounded-lg shadow-lg p-4 cursor-pointer"
                   >
                     {item.foto_barang && (
                       <img
@@ -98,9 +135,7 @@ const AllBarang = () => {
                         className="w-full h-40 object-cover rounded-md mb-4"
                       />
                     )}
-                    <h3 className="text-xl font-semibold mb-2">
-                      {item.nama_barang}
-                    </h3>
+                    <h3 className="text-xl font-semibold mb-2">{item.nama_barang}</h3>
                     <p className="text-gray-600">Harga: {item.harga}</p>
                     <p className="text-gray-600">Stok: {item.stok}</p>
                     <p className="text-gray-600">Deskripsi: {item.deskripsi}</p>
@@ -111,7 +146,11 @@ const AllBarang = () => {
                 currentItems.map((supplier) => (
                   <div
                     key={supplier.id}
-                    className="bg-white border border-gray-300 rounded-lg shadow-lg p-4"
+                    onClick={() => {
+                      setSelectedItem(supplier); 
+                      setIsOpen(true); 
+                    }}
+                    className="bg-white border border-gray-300 rounded-lg shadow-lg p-4 cursor-pointer"
                   >
                     {supplier.logo_supplier && (
                       <img
@@ -120,9 +159,7 @@ const AllBarang = () => {
                         className="w-full h-32 object-cover rounded-md mb-4"
                       />
                     )}
-                    <h3 className="text-xl font-semibold mb-2">
-                      {supplier.nama_supplier}
-                    </h3>
+                    <h3 className="text-xl font-semibold mb-2">{supplier.nama_supplier}</h3>
                     <p className="text-gray-600">Alamat: {supplier.alamat}</p>
                     <p className="text-gray-600">Telepon: {supplier.telepon}</p>
                   </div>
@@ -160,6 +197,13 @@ const AllBarang = () => {
             </div>
           </>
         )}
+
+        {/* Render Modal */}
+        <Modal
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          item={selectedItem}
+        />
       </section>
     </Layout>
   );

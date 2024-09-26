@@ -2,11 +2,16 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="absolute bottom-0 flex justify-between w-4/5 py-2 px-4 border-t-2">
-      <p>Copyright &copy; 2024</p>
-      <p>
-        Developer By <span className="text-cyan-900">Zuppremmm</span>
-      </p>
+    <footer className="bg-gray-800 text-white py-4 px-6 mt-auto">
+      <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
+        <p className="text-center md:text-left mb-2 md:mb-0">
+          © 2024 Warehouse Rabbaanii. All rights reserved.
+        </p>
+        <div className="flex space-x-4">
+          <a href="/terms" className="hover:underline">Terms of Service</a>
+          <a href="/privacy" className="hover:underline">Privacy Policy</a>
+        </div>
+      </div>
     </footer>
   );
 };
