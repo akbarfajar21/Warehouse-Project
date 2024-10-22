@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "../auth/AuthProvider";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
+
+  const { role } = useAuth();
 
   return (
     <>
@@ -46,7 +49,6 @@ const Sidebar = () => {
           <h2 className="flex items-center text-2xl font-bold gap-1">
             RB Market
           </h2>
-          {/* Close button (X) */}
           <button
             onClick={() => setIsOpen(false)}
             className="md:hidden text-white"
@@ -70,11 +72,13 @@ const Sidebar = () => {
                 <DashboardIcon /> Dashboard
               </LinkSidebar>
             </li>
+
             <li>
               <LinkSidebar link={"/table"}>
                 <TableIcon /> Tabel Barang
               </LinkSidebar>
             </li>
+
             <li>
               <LinkSidebar link={"/all-barang"}>
                 <ItemsIcon /> Semua Barang

@@ -10,22 +10,27 @@ import SupplierCRUD from "./pages/SupplierCRUD";
 import AddSupplier from "./pages/item/AddSuppliers";
 import ChangeSupplier from "./pages/item/ChangeSupplier";
 import SupplierDetail from "./pages/item/SupplierDetail";
-
+import Login from "./auth/Login";
+import AuthAdmin from "./auth/AuthAdmin";
 
 const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/table" element={<TableBarang/>} />
-        <Route path="/all-barang" element={<AllBarang/>} />
-        <Route path="/detail/:id" element={<ItemDetail/>} />
-        <Route path="/add-items" element={<AddItems />} />
-        <Route path="/change-item/:id" element={<ChangeItem />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/suppliers" element={<SupplierCRUD />} />
-        <Route path="/add-supplier" element={<AddSupplier />} />
-        <Route path="/edit-supplier/:id" element={<ChangeSupplier />} />
-        <Route path="/detail-supplier/:id" element={<SupplierDetail/>} />
+        <Route path="/detail-supplier/:id" element={<SupplierDetail />} />
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/table" element={<TableBarang />} />
+        <Route path="/all-barang" element={<AllBarang />} />
+        <Route path="/detail/:id" element={<ItemDetail />} />
+
+        <Route element={<AuthAdmin />}>
+          <Route path="/change-item/:id" element={<ChangeItem />} />
+          <Route path="/edit-supplier/:id" element={<ChangeSupplier />} />
+          <Route path="/add-items" element={<AddItems />} />
+          <Route path="/add-supplier" element={<AddSupplier />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

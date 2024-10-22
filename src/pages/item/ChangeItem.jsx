@@ -9,7 +9,8 @@ export default function ChangeItem() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [item, setItem] = useState(null);
-  const [loading, setLoading] = useState(true); // Added loading state
+  const [loading, setLoading] = useState(true);
+  const [previewImage, setPreviewImage] = useState(null);
   const [formData, setFormData] = useState({
     nama_barang: "",
     foto_barang: "",
@@ -21,7 +22,7 @@ export default function ChangeItem() {
 
   useEffect(() => {
     const fetchItem = async () => {
-      setLoading(true); // Start loading
+      setLoading(true);
       const { data, error } = await supabase
         .from("barang")
         .select("*")
@@ -30,7 +31,7 @@ export default function ChangeItem() {
 
       if (error) {
         console.error("Error fetching item:", error);
-        setLoading(false); // Stop loading on error
+        setLoading(false);
         return;
       }
 
@@ -43,7 +44,8 @@ export default function ChangeItem() {
         stok: data.stok,
         deskripsi: data.deskripsi,
       });
-      setLoading(false); // Stop loading on success
+      setPreviewImage(data.foto_barang);
+      setLoading(false);
     };
 
     fetchItem();
@@ -57,33 +59,86 @@ export default function ChangeItem() {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prevData) => ({
+        ...prevData,
+        foto_barang: file,
+      }));
+      setPreviewImage(URL.createObjectURL(file));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { error } = await supabase
-      .from("barang")
-      .update(formData)
-      .eq("id", id);
+    let foto_barang_url = formData.foto_barang;
 
-    if (error) {
+    try {
+      if (formData.foto_barang instanceof File) {
+        if (item.foto_barang) {
+          const fileName = item.foto_barang.split("/").pop();
+          console.log("Deleting old file:", fileName);
+
+          const { error: deleteError } = await supabase.storage
+            .from("fotoproduct")
+            .remove([`foto_product/${fileName}`]);
+
+          if (deleteError) {
+            console.error("Error deleting old file:", deleteError.message);
+            throw new Error(
+              "Gagal menghapus foto barang lama: " + deleteError.message
+            );
+          } else {
+            console.log("Old file deleted successfully:", fileName);
+          }
+        }
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from("fotoproduct")
+          .upload(
+            `foto_product/${formData.foto_barang.name}`,
+            formData.foto_barang
+          );
+
+        if (uploadError) {
+          throw new Error(
+            "Gagal mengunggah foto barang: " + uploadError.message
+          );
+        }
+
+        foto_barang_url = `https://nohdhimjdnmcytzooteh.supabase.co/storage/v1/object/public/fotoproduct/foto_product/${formData.foto_barang.name}`;
+
+        console.log("Uploaded new file URL:", foto_barang_url);
+      } else {
+        foto_barang_url = item.foto_barang;
+      }
+
+      const { error } = await supabase
+        .from("barang")
+        .update({ ...formData, foto_barang: foto_barang_url })
+        .eq("id", id);
+
+      if (error) {
+        throw new Error("Gagal update barang: " + error.message);
+      } else {
+        Swal.fire({
+          title: "Success!",
+          text: "Item berhasil diupdate!",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        navigate("/table");
+      }
+    } catch (error) {
       Swal.fire({
         title: "Error!",
-        text: "Gagal Update barang",
+        text: error.message,
         icon: "error",
         confirmButtonText: "OK",
       });
-      console.error("Error updating item:", error);
-    } else {
-      Swal.fire({
-        title: "Success!",
-        text: "Item berhasil diupdate!.",
-        icon: "success",
-        confirmButtonText: "OK",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          navigate("/table");
-        }
-      });
+      console.error("Error in handleSubmit:", error.message);
     }
   };
 
@@ -114,17 +169,29 @@ export default function ChangeItem() {
             required
             autoComplete="off"
           />
-          <Input
-            className="w-full"
-            clearable
-            underlined
-            label="Foto Barang URL"
+
+          <input
+            className="w-full border p-2 rounded-lg"
+            type="file"
+            accept="image/*"
             name="foto_barang"
-            value={formData.foto_barang}
-            onChange={handleInputChange}
-            required
-            autoComplete="off"
+            onChange={handleImageChange}
           />
+
+          {previewImage ? (
+            <img
+              src={previewImage}
+              alt={formData.nama_barang}
+              className="h-32 w-32 object-cover mt-2"
+            />
+          ) : item?.foto_barang ? (
+            <img
+              src={item.foto_barang}
+              alt={formData.nama_barang}
+              className="h-32 w-32 object-cover mt-2"
+            />
+          ) : null}
+
           <Input
             className="w-full"
             clearable
@@ -134,23 +201,25 @@ export default function ChangeItem() {
             name="harga"
             value={formData.harga}
             onChange={handleInputChange}
-            required
             autoComplete="off"
           />
           <div className="w-full">
-            <label className="block text-sm font-medium mb-2">Jenis Barang</label>
+            <label className="block text-sm font-medium mb-2">
+              Jenis Barang
+            </label>
             <select
               className="w-full border border-gray-300 rounded-lg p-2"
               name="jenis_barang"
               value={formData.jenis_barang}
               onChange={handleInputChange}
-              required
             >
               <option value="">Select Jenis Barang</option>
               <option value="Makanan">Makanan</option>
               <option value="Minuman">Minuman</option>
               <option value="Bahan Pokok">Bahan Pokok</option>
-              <option value="Kebutuhan Rumah Tangga">Kebutuhan Rumah Tangga</option>
+              <option value="Kebutuhan Rumah Tangga">
+                Kebutuhan Rumah Tangga
+              </option>
               <option value="Kemasan">Kemasan</option>
             </select>
           </div>
@@ -163,7 +232,6 @@ export default function ChangeItem() {
             name="stok"
             value={formData.stok}
             onChange={handleInputChange}
-            required
             autoComplete="off"
           />
           <Input
@@ -174,7 +242,6 @@ export default function ChangeItem() {
             name="deskripsi"
             value={formData.deskripsi}
             onChange={handleInputChange}
-            required
             autoComplete="off"
           />
           <div className="flex gap-4">

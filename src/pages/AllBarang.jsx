@@ -3,14 +3,14 @@ import Layout from "../components/Layout";
 import { supabase } from "../utils/SupaClient";
 import { Spinner } from "@nextui-org/react";
 
-const ITEMS_PER_PAGE = 8; 
+const ITEMS_PER_PAGE = 8;
 
 const Modal = ({ isOpen, onClose, item, filter }) => {
-  if (!isOpen || !item) return null; 
+  if (!isOpen || !item) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-md shadow-lg w-96 z-50">
+      <div className="bg-white p-6 rounded-md shadow-lg w-96 z-50 dark:bg-gray-800 dark:text-white">
         {filter === "barang" ? (
           <>
             <h3 className="text-xl font-semibold mb-4">{item.nama_barang}</h3>
@@ -23,9 +23,15 @@ const Modal = ({ isOpen, onClose, item, filter }) => {
             ) : (
               <p>No image available</p>
             )}
-            <p className="text-gray-600 mb-2">Harga: {item.harga || "-"}</p>
-            <p className="text-gray-600 mb-2">Stok: {item.stok || "-"}</p>
-            <p className="text-gray-600 mb-2">Deskripsi: {item.deskripsi || "-"}</p>
+            <p className="text-gray-600 mb-2 dark:bg-gray-800 dark:text-white">
+              Harga: {item.harga || "-"}
+            </p>
+            <p className="text-gray-600 mb-2 dark:bg-gray-800 dark:text-white">
+              Stok: {item.stok || "-"}
+            </p>
+            <p className="text-gray-600 mb-2 dark:bg-gray-800 dark:text-white">
+              Deskripsi: {item.deskripsi || "-"}
+            </p>
           </>
         ) : (
           <>
@@ -39,9 +45,15 @@ const Modal = ({ isOpen, onClose, item, filter }) => {
             ) : (
               <p>No image available</p>
             )}
-            <p className="text-gray-600 mb-2">No HP: {item.no_hp || "-"}</p>
-            <p className="text-gray-600 mb-2">Alamat: {item.alamat || "-"}</p>
-            <p className="text-gray-600 mb-2">Email: {item.email || "-"}</p>
+            <p className="text-gray-600 mb-2 dark:bg-gray-800 dark:text-white">
+              No HP: {item.no_hp || "-"}
+            </p>
+            <p className="text-gray-600 mb-2 dark:bg-gray-800 dark:text-white">
+              Alamat: {item.alamat || "-"}
+            </p>
+            <p className="text-gray-600 mb-2 dark:bg-gray-800 dark:text-white">
+              Email: {item.email || "-"}
+            </p>
           </>
         )}
         <button
@@ -61,7 +73,7 @@ const AllBarang = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("barang");
   const [currentPage, setCurrentPage] = useState(1);
-  const [isOpen, setIsOpen] = useState(false); 
+  const [isOpen, setIsOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
   const fetchData = async () => {
@@ -120,7 +132,7 @@ const AllBarang = () => {
               value={filter}
               onChange={(e) => {
                 setFilter(e.target.value);
-                setCurrentPage(1); 
+                setCurrentPage(1);
               }}
               className="p-2 border rounded-md"
             >
@@ -142,10 +154,10 @@ const AllBarang = () => {
                   <div
                     key={item.id}
                     onClick={() => {
-                      setSelectedItem(item); 
-                      setIsOpen(true); 
+                      setSelectedItem(item);
+                      setIsOpen(true);
                     }}
-                    className="bg-white border border-gray-300 rounded-lg shadow-lg p-4 cursor-pointer"
+                    className="bg-white border border-gray-300 rounded-lg shadow-lg p-4 cursor-pointer dark:bg-gray-800"
                   >
                     {item.foto_barang && (
                       <img
@@ -154,10 +166,18 @@ const AllBarang = () => {
                         className="w-full h-40 object-cover rounded-md mb-4"
                       />
                     )}
-                    <h3 className="text-xl font-semibold mb-2">{item.nama_barang}</h3>
-                    <p className="text-gray-600">Harga: {item.harga}</p>
-                    <p className="text-gray-600">Stok: {item.stok}</p>
-                    <p className="text-gray-600">Deskripsi: {item.deskripsi}</p>
+                    <h3 className="text-xl font-semibold mb-2 dark:text-white">
+                      {item.nama_barang}
+                    </h3>{" "}
+                    <p className="text-gray-600 dark:text-gray-300">
+                      Harga: {item.harga}
+                    </p>{" "}
+                    <p className="text-gray-600 dark:text-gray-300">
+                      Stok: {item.stok}
+                    </p>{" "}
+                    <p className="text-gray-600 dark:text-gray-300">
+                      Deskripsi: {item.deskripsi}
+                    </p>{" "}
                   </div>
                 ))}
 
@@ -166,10 +186,10 @@ const AllBarang = () => {
                   <div
                     key={supplier.id}
                     onClick={() => {
-                      setSelectedItem(supplier); 
-                      setIsOpen(true); 
+                      setSelectedItem(supplier);
+                      setIsOpen(true);
                     }}
-                    className="bg-white border border-gray-300 rounded-lg shadow-lg p-4 cursor-pointer"
+                    className="bg-white border border-gray-300 rounded-lg shadow-lg p-4 cursor-pointer dark:bg-gray-800"
                   >
                     {supplier.logo_supplier && (
                       <img
@@ -178,16 +198,22 @@ const AllBarang = () => {
                         className="w-full h-32 object-cover rounded-md mb-4"
                       />
                     )}
-                    <h3 className="text-xl font-semibold mb-2">{supplier.nama_supplier}</h3>
-                    <p className="text-gray-600">Alamat: {supplier.alamat}</p>
-                    <p className="text-gray-600">Telepon: {supplier.no_hp}</p>
+                    <h3 className="text-xl font-semibold mb-2 dark:text-white">
+                      {supplier.nama_supplier}
+                    </h3>{" "}
+                    <p className="text-gray-600 dark:text-gray-300">
+                      Alamat: {supplier.alamat}
+                    </p>{" "}
+                    <p className="text-gray-600 dark:text-gray-300">
+                      Telepon: {supplier.no_hp}
+                    </p>{" "}
                   </div>
                 ))}
             </div>
 
             <div className="flex justify-center items-center mt-8 space-x-2">
               <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} 
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
                 className="px-4 py-2 text-white rounded-md bg-blue-500"
               >
@@ -207,7 +233,9 @@ const AllBarang = () => {
                 </button>
               ))}
               <button
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
                 disabled={currentPage === totalPages}
                 className="px-4 py-2 text-white rounded-md bg-blue-500"
               >
@@ -221,7 +249,7 @@ const AllBarang = () => {
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
           item={selectedItem}
-          filter={filter} 
+          filter={filter}
         />
       </section>
     </Layout>

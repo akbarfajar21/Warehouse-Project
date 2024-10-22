@@ -53,8 +53,8 @@ const ItemDetail = () => {
 
   return (
     <Layout>
-      <div className="flex justify-center items-center p-6 md:p-10">
-        <div className="bg-white shadow-lg rounded-lg p-6 md:p-10 border border-gray-200 w-full max-w-screen-lg">
+      <div className="flex justify-center items-center p-6 md:p-10 ">
+        <div className="bg-white shadow-lg rounded-lg p-6 md:p-10 border border-gray-200 w-full max-w-screen-lg dark:bg-gray-800">
           <div className="flex flex-col md:flex-row gap-6">
             <div className="w-full md:w-1/2">
               <img
@@ -68,7 +68,7 @@ const ItemDetail = () => {
 
               <div className="mb-4">
                 <strong>Harga: </strong>
-                <span className="text-lg md:text-xl font-semibold text-green-500">
+                <span className="text-lg md:text-xl font-semibold text-green-500 ">
                   Rp {Number(harga).toLocaleString("id-ID")}
                 </span>
               </div>

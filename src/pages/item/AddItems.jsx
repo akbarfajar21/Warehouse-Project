@@ -5,55 +5,99 @@ import Layout from "../../components/Layout";
 import Swal from "sweetalert2";
 
 const AddItems = () => {
-  const [nama_barang, setNamaBarang] = useState("");
-  const [foto_barang, setFotoBarang] = useState("");
-  const [harga, setHarga] = useState("");
-  const [jenis_barang, setJenisBarang] = useState("");
-  const [stok, setStok] = useState("");
-  const [deskripsi, setDeskripsi] = useState("");
+  const [formData, setFormData] = useState({
+    nama_barang: "",
+    foto_barang: "",
+    harga: "",
+    jenis_barang: "",
+    stok: "",
+    deskripsi: "",
+  });
 
+  const [previewImage, setPreviewImage] = useState(null); // State untuk menyimpan URL gambar preview
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
-      const { data, error } = await supabase.from("barang").insert([
-        {
-          nama_barang,
-          foto_barang,
-          harga,
-          jenis_barang,
-          stok,
-          deskripsi,
-        },
-      ]);
-
-      if (error) {
-        throw error;
+      const { data: uploadImage, error: uploadError } = await supabase.storage
+        .from("fotoproduct")
+        .upload(
+          `foto_product/${formData.foto_barang.name}`,
+          formData.foto_barang,
+          {
+            cacheControl: "3600",
+            upsert: true,
+          }
+        );
+      if (uploadError) {
+        throw uploadError;
       }
 
-      Swal.fire({
-        title: "Berhasil!",
-        text: "Barang Berhasil di Tambahkan!",
-        icon: "success",
-        confirmButtonText: "OK",
-      }).then(() => {
-        navigate("/table");
-      });
+      if (uploadImage) {
+        const imageUrl = supabase.storage
+          .from("fotoproduct")
+          .getPublicUrl(`foto_product/${formData.foto_barang.name}`)
+          .data.publicUrl;
+
+        const updateFormData = {
+          ...formData,
+          foto_barang: imageUrl,
+        };
+
+        const { data, error } = await supabase
+          .from("barang")
+          .insert(updateFormData)
+          .select();
+
+        if (error) {
+          throw error;
+        }
+
+        if (data) {
+          Swal.fire({
+            title: "Sukses",
+            text: "Data Berhasil di input ke database",
+            icon: "success",
+          }).then(() => {
+            window.location.href = "/table"
+          });
+        }
+      }
     } catch (error) {
+      console.log(error);
       Swal.fire({
-        title: "Error!",
-        text: "Gagal Menambahkan Barang!",
+        title: "Error",
+        text: "Data gagal di input ke database",
         icon: "error",
-        confirmButtonText: "OK",
       });
-      console.error(error);
     }
   };
 
   const handleBack = () => {
     navigate(-1);
+  };
+
+  const handleImage = (e) => {
+    const file = e.target.files[0]; // Ambil file yang dipilih
+    setFormData({
+      ...formData,
+      foto_barang: file, // Simpan file ke dalam formData
+    });
+
+    if (file) {
+      setPreviewImage(URL.createObjectURL(file)); // Set URL untuk preview
+    } else {
+      setPreviewImage(null); // Reset jika tidak ada file
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
   return (
@@ -68,30 +112,41 @@ const AddItems = () => {
               </label>
               <input
                 type="text"
-                value={nama_barang}
-                onChange={(e) => setNamaBarang(e.target.value)}
+                name="nama_barang"
+                value={formData.nama_barang}
+                onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded"
                 required
               />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">
-                Foto Barang URL
+                Foto Barang
               </label>
               <input
-                type="text"
-                value={foto_barang}
-                onChange={(e) => setFotoBarang(e.target.value)}
+                type="file"
+                name="foto_barang"
+                onChange={handleImage}
                 className="w-full p-2 border border-gray-300 rounded"
                 required
               />
             </div>
+            {previewImage && ( // Tampilkan preview gambar jika ada
+              <div className="mb-4">
+                <img
+                  src={previewImage}
+                  alt="Preview"
+                  className="h-32 w-32 object-cover mt-2 border border-gray-300 rounded"
+                />
+              </div>
+            )}
             <div>
               <label className="block text-sm font-medium mb-1">Harga</label>
               <input
                 type="number"
-                value={harga}
-                onChange={(e) => setHarga(e.target.value)}
+                name="harga"
+                value={formData.harga}
+                onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded"
                 required
               />
@@ -101,8 +156,9 @@ const AddItems = () => {
                 Jenis Barang
               </label>
               <select
-                value={jenis_barang}
-                onChange={(e) => setJenisBarang(e.target.value)}
+                name="jenis_barang"
+                value={formData.jenis_barang}
+                onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded"
                 required
               >
@@ -120,8 +176,9 @@ const AddItems = () => {
               <label className="block text-sm font-medium mb-1">Stok</label>
               <input
                 type="number"
-                value={stok}
-                onChange={(e) => setStok(e.target.value)}
+                name="stok"
+                value={formData.stok}
+                onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded"
                 required
               />
@@ -131,8 +188,9 @@ const AddItems = () => {
                 Deskripsi
               </label>
               <textarea
-                value={deskripsi}
-                onChange={(e) => setDeskripsi(e.target.value)}
+                name="deskripsi"
+                value={formData.deskripsi}
+                onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded"
                 required
               />

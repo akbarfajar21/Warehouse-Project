@@ -18,6 +18,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { supabase } from "../utils/SupaClient";
 import Layout from "../components/Layout";
+import { useAuth } from "../auth/AuthProvider";
 
 const columns = [
   { key: "logo_supplier", label: "Logo Supplier" },
@@ -34,6 +35,7 @@ export default function SupplierCRUD() {
   const [page, setPage] = useState(1);
   const rowsPerPage = 7;
   const navigate = useNavigate();
+  const { role, user } = useAuth();
 
   useEffect(() => {
     fetchSuppliers();
@@ -65,49 +67,57 @@ export default function SupplierCRUD() {
   };
 
   const handleEditClick = (supplierId) => {
-    navigate(`/edit-supplier/${supplierId}`);
+    if (role === "admin") {
+      navigate(`/edit-supplier/${supplierId}`);
+    } else {
+      navigate("/login"); 
+    }
   };
 
   const handleDeleteClick = async (supplierId, supplierName) => {
-    const result = await Swal.fire({
-      title: `Hapus Supplier ${supplierName}?`,
-      text: "Anda tidak akan bisa mengembalikannya!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Hapus",
-      cancelButtonText: "Batal",
-    });
+    if (role === "admin") {
+      const result = await Swal.fire({
+        title: `Hapus Supplier ${supplierName}?`,
+        text: "Anda tidak akan bisa mengembalikannya!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Hapus",
+        cancelButtonText: "Batal",
+      });
 
-    if (result.isConfirmed) {
-      try {
-        const { error } = await supabase
-          .from("suppliers")
-          .delete()
-          .eq("id_supplier", supplierId);
+      if (result.isConfirmed) {
+        try {
+          const { error } = await supabase
+            .from("suppliers")
+            .delete()
+            .eq("id_supplier", supplierId);
 
-        if (error) {
-          throw error;
+          if (error) {
+            throw error;
+          }
+
+          Swal.fire({
+            title: "Berhasil!",
+            text: "Supplier berhasil dihapus!",
+            icon: "success",
+            confirmButtonText: "OK",
+          }).then(() => {
+            fetchSuppliers();
+          });
+        } catch (error) {
+          Swal.fire({
+            title: "Error!",
+            text: "Gagal menghapus supplier. Silakan coba lagi.",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+          console.error(error);
         }
-
-        Swal.fire({
-          title: "Berhasil!",
-          text: "Supplier berhasil dihapus!",
-          icon: "success",
-          confirmButtonText: "OK",
-        }).then(() => {
-          fetchSuppliers();
-        });
-      } catch (error) {
-        Swal.fire({
-          title: "Error!",
-          text: "Gagal menghapus supplier. Silakan coba lagi.",
-          icon: "error",
-          confirmButtonText: "OK",
-        });
-        console.error(error);
       }
+    } else {
+      navigate("/login");  
     }
   };
 
@@ -129,9 +139,19 @@ export default function SupplierCRUD() {
     <Layout>
       <div className="mb-4 flex flex-col sm:flex-row justify-between items-center px-4 py-2">
         <h2 className="text-2xl font-semibold mb-2 sm:mb-0">Suppliers List</h2>
-        <Button auto color="primary" onClick={() => navigate("/add-supplier")}>
-          + Add Supplier
-        </Button>
+        {user && role === "admin" ? (
+          <Button
+            auto
+            color="primary"
+            onClick={() => navigate("/add-supplier")}
+          >
+            + Add Supplier
+          </Button>
+        ) : (
+          <Link to={"/login"}>
+            <Button color="primary">Login sebagai admin</Button>
+          </Link>
+        )}
       </div>
       <Table
         aria-label="Supplier table with client-side pagination"
