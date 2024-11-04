@@ -11,7 +11,7 @@ import { useAuth } from "../../auth/AuthProvider";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function DropdownUser() {
-  const { username, avatar, email, logout } = useAuth();
+  const { username, avatar, email, logout,} = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {

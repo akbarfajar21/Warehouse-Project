@@ -10,6 +10,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 export default function Profiles() {
   const { user } = useAuth();
   const [username, setUsername] = useState("");
+  const [fullName, setFullName] = useState(""); 
   const [email, setEmail] = useState("");
   const [noTelepon, setNoTelepon] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
@@ -28,6 +29,7 @@ export default function Profiles() {
       if (error) throw error;
 
       setUsername(data.username);
+      setFullName(data.full_name);
       setAvatarUrl(data.avatar_url);
       setEmail(data.email);
       setNoTelepon(data.no_telepon);
@@ -49,7 +51,7 @@ export default function Profiles() {
     try {
       const { error } = await supabase
         .from("profiles")
-        .update({ username, email, no_telepon: noTelepon })
+        .update({ username, full_name: fullName, email, no_telepon: noTelepon }) 
         .eq("id", user.id);
 
       if (error) throw error;
@@ -173,6 +175,15 @@ export default function Profiles() {
 
         <h2 className="text-2xl font-bold mb-6 text-center">Profile</h2>
 
+        <div className="mb-4 w-full">
+          <label className="block font-semibold mb-1">Full Name</label>
+          <input
+            type="text"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            className="w-full p-2 border rounded"
+          />
+        </div>
         <div className="mb-4 w-full">
           <label className="block font-semibold mb-1">Username</label>
           <input
