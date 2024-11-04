@@ -3,17 +3,18 @@ import Swal from "sweetalert2";
 import { useAuth } from "../auth/AuthProvider";
 import { supabase } from "../utils/SupaClient";
 import { PencilIcon } from "@heroicons/react/24/solid";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
-import Layout from "../components/Layout"; // Import the Layout component
+import { useNavigate } from "react-router-dom";
+import Layout from "../components/Layout";
+import ClipLoader from "react-spinners/ClipLoader"; 
 
 export default function Profiles() {
   const { user } = useAuth();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [noTelepon, setNoTelepon] = useState(""); // State for phone number
+  const [noTelepon, setNoTelepon] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
 
   const fetchProfile = async () => {
     try {
@@ -29,7 +30,7 @@ export default function Profiles() {
       setUsername(data.username);
       setAvatarUrl(data.avatar_url);
       setEmail(data.email);
-      setNoTelepon(data.no_telepon); // Set phone number
+      setNoTelepon(data.no_telepon);
     } catch (error) {
       console.error("Error fetching profile:", error);
       alert("Failed to fetch profile data.");
@@ -48,7 +49,7 @@ export default function Profiles() {
     try {
       const { error } = await supabase
         .from("profiles")
-        .update({ username, email, no_telepon: noTelepon }) // Update phone number
+        .update({ username, email, no_telepon: noTelepon })
         .eq("id", user.id);
 
       if (error) throw error;
@@ -57,6 +58,8 @@ export default function Profiles() {
         icon: "success",
         title: "Profile Updated",
         text: "Your profile has been updated successfully!",
+      }).then(() => {
+        window.location.reload();
       });
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -134,6 +137,8 @@ export default function Profiles() {
         icon: "success",
         title: "Success",
         text: "Avatar updated successfully!",
+      }).then(() => {
+        window.location.reload(); 
       });
     } catch (error) {
       console.error("Error updating avatar:", error);
@@ -142,7 +147,11 @@ export default function Profiles() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <ClipLoader loading={loading} size={50} color="#4A5568" />
+      </div>
+    );
   }
 
   return (
@@ -163,7 +172,7 @@ export default function Profiles() {
         </div>
 
         <h2 className="text-2xl font-bold mb-6 text-center">Profile</h2>
-        
+
         <div className="mb-4 w-full">
           <label className="block font-semibold mb-1">Username</label>
           <input
