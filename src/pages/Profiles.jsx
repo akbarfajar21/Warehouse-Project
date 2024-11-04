@@ -5,12 +5,12 @@ import { supabase } from "../utils/SupaClient";
 import { PencilIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
-import ClipLoader from "react-spinners/ClipLoader"; 
+import ClipLoader from "react-spinners/ClipLoader";
 
 export default function Profiles() {
   const { user } = useAuth();
   const [username, setUsername] = useState("");
-  const [fullName, setFullName] = useState(""); 
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [noTelepon, setNoTelepon] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
@@ -51,7 +51,7 @@ export default function Profiles() {
     try {
       const { error } = await supabase
         .from("profiles")
-        .update({ username, full_name: fullName, email, no_telepon: noTelepon }) 
+        .update({ username, full_name: fullName, email, no_telepon: noTelepon })
         .eq("id", user.id);
 
       if (error) throw error;
@@ -70,81 +70,94 @@ export default function Profiles() {
   };
 
   const handleEditAvatar = async () => {
-    try {
-      const file = await new Promise((resolve) => {
-        const input = document.createElement("input");
-        input.type = "file";
-        input.accept = "image/*";
-        input.onchange = () => resolve(input.files[0]);
-        input.click();
-      });
+    const result = await Swal.fire({
+      title: "Change Profile Picture?",
+      text: "Do you want to change your profile picture?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+    });
 
-      if (!file) return;
+    if (result.isConfirmed) {
+      try {
+        const file = await new Promise((resolve) => {
+          const input = document.createElement("input");
+          input.type = "file";
+          input.accept = "image/*";
+          input.onchange = () => resolve(input.files[0]);
+          input.click();
+        });
 
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
-      const filePath = `avatars/${fileName}`;
+        if (!file) return;
 
-      const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(filePath, file, { upsert: true });
+        const fileExt = file.name.split(".").pop();
+        const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+        const filePath = `avatars/${fileName}`;
 
-      if (uploadError) {
-        console.error("Upload error:", uploadError);
-        throw new Error("Failed to upload the file to storage.");
-      }
-
-      const { data, error: urlError } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(filePath);
-
-      if (urlError) {
-        console.error("URL error:", urlError);
-        throw new Error("Failed to get public URL of the uploaded file.");
-      }
-
-      const newAvatarUrl = data.publicUrl;
-
-      const { error: updateError } = await supabase
-        .from("profiles")
-        .update({ avatar_url: newAvatarUrl })
-        .eq("id", user.id);
-
-      if (updateError) {
-        console.error("Update error:", updateError);
-        throw new Error("Failed to update avatar URL in the database.");
-      }
-
-      if (avatarUrl && avatarUrl !== "https://via.placeholder.com/150") {
-        const oldFileName = avatarUrl.split("/").pop();
-        const oldFilePath = `avatars/${oldFileName}`;
-
-        console.log("Attempting to delete old avatar at:", oldFilePath);
-
-        const { error: deleteError } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
           .from("avatars")
-          .remove([oldFilePath]);
+          .upload(filePath, file, { upsert: true });
 
-        if (deleteError) {
-          console.error("Delete error:", deleteError);
-          throw new Error("Failed to delete the old avatar from storage.");
-        } else {
-          console.log("Old avatar deleted successfully.");
+        if (uploadError) {
+          console.error("Upload error:", uploadError);
+          throw new Error("Failed to upload the file to storage.");
         }
+
+        const { data, error: urlError } = supabase.storage
+          .from("avatars")
+          .getPublicUrl(filePath);
+
+        if (urlError) {
+          console.error("URL error:", urlError);
+          throw new Error("Failed to get public URL of the uploaded file.");
+        }
+
+        const newAvatarUrl = data.publicUrl;
+
+        const { error: updateError } = await supabase
+          .from("profiles")
+          .update({ avatar_url: newAvatarUrl })
+          .eq("id", user.id);
+
+        if (updateError) {
+          console.error("Update error:", updateError);
+          throw new Error("Failed to update avatar URL in the database.");
+        }
+
+        if (avatarUrl && avatarUrl !== "https://via.placeholder.com/150") {
+          const oldFileName = avatarUrl.split("/").pop();
+          const oldFilePath = `avatars/${oldFileName}`;
+
+          console.log("Attempting to delete old avatar at:", oldFilePath);
+
+          const { error: deleteError } = await supabase.storage
+            .from("avatars")
+            .remove([oldFilePath]);
+
+          if (deleteError) {
+            console.error("Delete error:", deleteError);
+            throw new Error("Failed to delete the old avatar from storage.");
+          } else {
+            console.log("Old avatar deleted successfully.");
+          }
+        }
+
+        setAvatarUrl(newAvatarUrl);
+
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: "Avatar updated successfully!",
+        }).then(() => {
+          window.location.reload();
+        });
+      } catch (error) {
+        console.error("Error updating avatar:", error);
+        alert("Failed to update avatar.");
       }
-
-      setAvatarUrl(newAvatarUrl);
-
-      Swal.fire({
-        icon: "success",
-        title: "Success",
-        text: "Avatar updated successfully!",
-      }).then(() => {
-        window.location.reload(); 
-      });
-    } catch (error) {
-      console.error("Error updating avatar:", error);
-      alert("Failed to update avatar.");
+    } else {
+      console.log("Avatar update canceled.");
     }
   };
 
