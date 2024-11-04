@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import DropdownUser from "./nextui/DropdownUser";
 import { useLocation } from "react-router-dom";
-import { FaSun, FaMoon } from "react-icons/fa"; 
+import { FaSun, FaMoon } from "react-icons/fa";
 
 const Header = () => {
   const location = useLocation();
@@ -34,6 +34,8 @@ const Header = () => {
         return "Suppliers";
       case "/add-supplier":
         return "Tambah Supplier";
+      case "/profiles":
+        return "Profiles";
       default:
         if (location.pathname.startsWith("/change-item")) {
           return `Edit Item`;

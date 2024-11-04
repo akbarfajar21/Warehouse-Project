@@ -12,6 +12,7 @@ import ChangeSupplier from "./pages/item/ChangeSupplier";
 import SupplierDetail from "./pages/item/SupplierDetail";
 import Login from "./auth/Login";
 import AuthAdmin from "./auth/AuthAdmin";
+import Profiles from "./pages/Profiles"; 
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
         <Route path="/table" element={<TableBarang />} />
         <Route path="/all-barang" element={<AllBarang />} />
         <Route path="/detail/:id" element={<ItemDetail />} />
+        <Route path="/profiles" element={<Profiles />} /> 
 
         <Route element={<AuthAdmin />}>
           <Route path="/change-item/:id" element={<ChangeItem />} />

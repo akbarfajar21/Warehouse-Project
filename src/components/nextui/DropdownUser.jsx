@@ -6,28 +6,29 @@ import {
   DropdownItem,
   User,
 } from "@nextui-org/react";
-import Swal from "sweetalert2"; // Import SweetAlert
+import Swal from "sweetalert2";
 import { useAuth } from "../../auth/AuthProvider";
-import { Link } from "react-router-dom"; // Import Link for navigation
+import { Link, useNavigate } from "react-router-dom";
 
 export default function DropdownUser() {
   const { username, avatar, email, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     Swal.fire({
-      title: "Logout Berhasil!",
-      text: "Anda telah berhasil logout.",
+      title: "Logout Successful!",
+      text: "You have successfully logged out.",
       icon: "success",
       confirmButtonText: "OK",
     }).then(() => {
       logout();
-      window.location.href = "/"; 
+      window.location.href = "/";
     });
   };
 
   return (
     <div className="flex items-center gap-4">
-      {username ? ( // Render DropdownUser if logged in
+      {username ? (
         <Dropdown placement="bottom-start">
           <DropdownTrigger>
             <User
@@ -46,7 +47,9 @@ export default function DropdownUser() {
               <p className="font-bold">Signed in as</p>
               <p className="font-bold">@{username}</p>
             </DropdownItem>
-
+            <DropdownItem color="warning">
+              <Link to="/profiles">Profiles</Link>
+            </DropdownItem>
             <DropdownItem key="logout" color="danger" onClick={handleLogout}>
               Log Out
             </DropdownItem>
